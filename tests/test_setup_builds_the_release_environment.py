@@ -7,6 +7,7 @@ that do not need AWS, which is all of it except where the variables come from.
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -15,18 +16,28 @@ from conftest import ACTIONS
 
 SETUP = ACTIONS / "setup" / "setup.sh"
 
+# Scopes PATH so a variable the script needs must be passed, not inherited from whoever ran the
+# tests. git's own directory is kept because macOS `/usr/bin/git` is an xcrun shim that needs it.
+_GIT = shutil.which("git")
+PATH = ":".join(
+    dict.fromkeys(
+        ([str(Path(_GIT).parent)] if _GIT else [])
+        + ["/usr/bin", "/bin", "/usr/local/bin"]
+    )
+)
+
 SECRET = {
     "GARASIGN_USERNAME": "ai-builder-experience",
     "GARASIGN_PASSWORD": "a password",
     "GPG_KEY_ID": "DEADBEEFCAFE",
 }
 
-
-@pytest.fixture
-def runner(tmp_path: Path) -> dict[str, str]:
-    """A runner's temp directory and a git repository to set an identity in."""
-    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    """A runner's temp directory, and a HOME of its own for the git identity to land in.
+    """
+    home = tmp_path / "home"
+    home.mkdir()
     return {
+        "HOME": str(home),
         "RUNNER_TEMP": str(tmp_path),
         "GITHUB_ENV": str(tmp_path / "github-env"),
         "GITHUB_RUN_ID": "424242",
@@ -42,7 +53,7 @@ def setup(
         ["bash", str(SETUP)],
         check=False,
         cwd=tmp_path,
-        env={"PATH": "/usr/bin:/bin:/usr/local/bin", **runner, **(SECRET | secret)},
+        env={"PATH": PATH, **runner, **(SECRET | secret)},
         capture_output=True,
         text=True,
     )
@@ -135,3 +146,32 @@ def test_the_asset_directories_exist_and_record_the_run(tmp_path: Path, runner) 
     assert (
         Path(env["RELEASE_ASSETS"]) / "release_run_id.txt"
     ).read_text().strip() == "424242"
+
+
+def test_setup_runs_in_a_job_that_checked_nothing_out(tmp_path: Path, runner) -> None:
+    """`setup.sh` must work with no working tree, the shape of every artifact-only job."""
+    assert not (tmp_path / ".git").exists(), (
+        "Failed because test ran inside a repository"
+    )
+
+    result = setup(tmp_path, runner)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "not in a git directory" not in result.stderr
+
+
+def test_setup_sets_the_bot_identity_where_a_later_checkout_will_find_it(
+    tmp_path: Path, runner
+) -> None:
+    """A global identity is only useful if git actually reads it back as the committer."""
+    setup(tmp_path, runner)
+
+    # `check=False`, so an unset key reaches the assertion below instead of raising on exit 1.
+    shown = subprocess.run(
+        ["git", "config", "--global", "--get", "user.name"],
+        env={"PATH": PATH, "HOME": runner["HOME"]},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert shown.stdout.strip() == "mongodb-dbx-release-bot[bot]", shown.stderr

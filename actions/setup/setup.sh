@@ -69,6 +69,8 @@ S3_ASSETS=$S3_ASSETS
 SECURITY_REPORT_URL=${SECURITY_REPORT_URL:-}
 EOF
 
+# --global because a caller may not have checked anything out, and a repository-local `git config`
+# would fail such a job with `fatal: not in a git directory`.
 echo "Set up git credentials"
-git config user.email "167856002+mongodb-dbx-release-bot[bot]@users.noreply.github.com"
-git config user.name "mongodb-dbx-release-bot[bot]"
+git config --global user.email "167856002+mongodb-dbx-release-bot[bot]@users.noreply.github.com"
+git config --global user.name "mongodb-dbx-release-bot[bot]"
