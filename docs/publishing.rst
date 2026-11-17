@@ -65,4 +65,5 @@ The DBX policy requires signed release tags. Sign them with the
 
 Create a tag ruleset that blocks tag deletion and force-push. Add the
 release identity to the bypass list. Create the branch ruleset in the
-same way. The release identity is in :doc:`signing`.
+same way, and require signed commits. The release identity is in
+:doc:`signing`.

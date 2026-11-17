@@ -4,10 +4,7 @@ Artifact signing
 Signing credentials
 -------------------
 
-The ABX key is ``ai-builder-experience``. A team that needs its own key
-requests one as part of the onboarding steps in the `ABX release how-to
-guides
-<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
+The ABX key is ``ai-builder-experience``.
 
 To find the key ID from the public key URL, run:
 
@@ -63,7 +60,8 @@ GitHub Actions: ``git-sign``
 ----------------------------
 
 Runs arbitrary git commands in a container with the Garasign GPG keys
-loaded. Use it to sign release tags.
+loaded. Use it to sign release tags and commits. Run ``git commit -S``
+to sign a commit.
 
 Usage
 -----
@@ -96,9 +94,7 @@ Release identity
 The ``setup`` action sets the git identity to
 ``mongodb-dbx-release-bot[bot]``. The bypass list in each ruleset must
 include the identity that pushes commits and tags. See
-:doc:`publishing`. The steps and the access requests are in the `ABX
-release how-to guides
-<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
+:doc:`publishing`.
 
 Evergreen: ``evergreen/sign_artifacts.yml``
 -------------------------------------------
