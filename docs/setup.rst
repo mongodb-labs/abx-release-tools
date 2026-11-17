@@ -107,6 +107,97 @@ line-oriented). The files are written under ``RUNNER_TEMP`` with
 It also sets the git identity to ``mongodb-dbx-release-bot[bot]`` for
 release commits and tags.
 
+AWS setup
+---------
+
+Create the private S3 bucket, the secret, and the role before the first
+release.
+
+S3 bucket
+~~~~~~~~~
+
+Use a private bucket for release assets, for example
+``abx-release-assets``. The bucket name goes in the secret as
+``release-assets-bucket``. The actions write to it under
+``arn:aws:s3:::abx-release-assets``.
+
+IAM policy
+~~~~~~~~~~
+
+The role needs a policy that reads the secret and writes the bucket.
+Replace the bucket name, region, account ID, and secret ARN with your
+values.
+
+.. code-block:: json
+
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": [
+           "s3:PutObject",
+           "s3:PutObjectAcl",
+           "s3:GetObjectAcl"
+         ],
+         "Resource": "arn:aws:s3:::abx-release-assets/*"
+       },
+       {
+         "Effect": "Allow",
+         "Action": [
+           "s3:ListBucket",
+           "s3:GetBucketLocation"
+         ],
+         "Resource": "arn:aws:s3:::abx-release-assets"
+       },
+       {
+         "Effect": "Allow",
+         "Action": "secretsmanager:ListSecrets",
+         "Resource": "*"
+       },
+       {
+         "Effect": "Allow",
+         "Action": [
+           "secretsmanager:DescribeSecret",
+           "secretsmanager:GetSecretValue"
+         ],
+         "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:abx-release/team-abcdef"
+       }
+     ]
+   }
+
+Name the policy, for example ``abx-release-assets``.
+
+IAM role trust policy
+~~~~~~~~~~~~~~~~~~~~~
+
+The role trusts the GitHub OIDC provider for one environment. Replace
+the account ID and repository with your values. Keep the environment
+name ``release``.
+
+.. code-block:: json
+
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Principal": {
+           "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+         },
+         "Action": "sts:AssumeRoleWithWebIdentity",
+         "Condition": {
+           "StringEquals": {
+             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+             "token.actions.githubusercontent.com:sub": "repo:<org>/<repo>:environment:release"
+           }
+         }
+       }
+     ]
+   }
+
+The environment name in the subject must be ``release``.
+
 .. _evergreen-fetch:
 
 Evergreen: fetch the tools
