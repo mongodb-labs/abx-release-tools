@@ -61,5 +61,8 @@ Sign the release tag
 --------------------
 
 The DBX policy requires signed release tags. Sign them with the
-``git-sign`` action; see :doc:`signing`. The tag ruleset is in the ABX
-release how-to guides.
+``git-sign`` action; see :doc:`signing`.
+
+Create a tag ruleset that blocks tag deletion and force-push. Add the
+release identity to the bypass list. Create the branch ruleset in the
+same way. The release identity is in :doc:`signing`.

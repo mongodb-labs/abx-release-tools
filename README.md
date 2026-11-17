@@ -8,7 +8,6 @@ integrations that join that list.
 POC. Covers the four steps of an ABX release; the
 [documentation](docs/index.rst) has the details:
 
-- [Onboarding a repository](docs/onboarding.rst)
 - [Dependency scanning with SilkBomb](docs/scanning.rst)
 - [Artifact signing with Garasign](docs/signing.rst)
 - [Artifact tracing: Papertrail or the authorized-publication

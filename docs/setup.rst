@@ -3,8 +3,148 @@ Setup
 
 The ``setup`` action prepares the release environment. Run it first:
 every other action except ``python/publish`` reads the environment it
-writes. The AWS role, the secret, and the ``release`` environment are
-one-time setup; see :doc:`onboarding`.
+writes.
+
+One-time setup
+--------------
+
+Run these steps once for the team and once for each repository.
+
+Release environment
+~~~~~~~~~~~~~~~~~~~
+
+Create a GitHub environment named ``release``. The name must match the
+subject condition in the IAM role below. Add the team as required
+reviewers, so a release waits for approval.
+
+Add these secrets and variables to the environment:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Name
+     - Kind
+     - Value
+   * - ``AWS_ROLE_ARN``
+     - Secret
+     - ARN of the role below.
+   * - ``AWS_SECRET_ID``
+     - Secret
+     - Name or ARN of the secret below.
+   * - ``AWS_REGION_NAME``
+     - Variable
+     - Region of the secret, for example ``us-east-1``.
+
+The DRIVERS secure release guide also lists ``APP_ID`` and
+``APP_PRIVATE_KEY``. They belong to the drivers-github-tools GitHub
+App. These actions do not use that app, so leave them out.
+
+AWS role
+~~~~~~~~
+
+An AWS admin creates a role that trusts the GitHub OIDC provider. Use a
+name like ``abx-release-role``. Attach the policy below.
+
+.. code-block:: json
+
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Principal": {
+           "Federated": "arn:aws:iam::<aws-account-id>:oidc-provider/token.actions.githubusercontent.com"
+         },
+         "Action": "sts:AssumeRoleWithWebIdentity",
+         "Condition": {
+           "StringEquals": {
+             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+             "token.actions.githubusercontent.com:sub": "repo:<org>/<repo>:environment:release"
+           }
+         }
+       }
+     ]
+   }
+
+The subject condition limits the role to one repository and one
+environment. Change both values for each repository.
+
+AWS secret
+~~~~~~~~~~
+
+Ask DevProd Release Infrastructure for a private S3 bucket and a
+Secrets Manager secret named ``abx-release/<team>``. Include both in
+the release infrastructure onboarding request (DEVPROD-44346).
+
+Do not reuse a name that starts with ``drivers/``. Non-admins can read
+secrets under that prefix.
+
+The secret holds these keys:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Key
+     - Value
+   * - ``garasign-username``
+     - Garasign username. See :doc:`signing`.
+   * - ``garasign-password``
+     - Garasign password. See :doc:`signing`.
+   * - ``gpg-key-id``
+     - Key ID of the signing key. See :doc:`signing`.
+   * - ``gpg-public-url``
+     - Public key URL, for example
+       ``https://pgp.mongodb.com/ai-builder-experience.asc``.
+   * - ``release-assets-bucket``
+     - Name of the bucket above.
+   * - ``security-report-url``
+     - The central security testing summary:
+       https://docs.google.com/document/d/1y2K_RY4GZVXpQvv4JH_35mSzFRTawNJ3mibpvSBU8H0
+   * - ``kondukto-token``
+     - Team Kondukto token. See :doc:`scanning`.
+
+IAM policy
+~~~~~~~~~~
+
+The role needs a policy like this. Replace the placeholders. Scope the
+secret resource to the team's own secret.
+
+.. code-block:: json
+
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "ListReleaseBucket",
+         "Effect": "Allow",
+         "Action": [
+           "s3:ListBucket",
+           "s3:GetBucketLocation"
+         ],
+         "Resource": "arn:aws:s3:::<bucket>"
+       },
+       {
+         "Sid": "WriteReleaseAssets",
+         "Effect": "Allow",
+         "Action": [
+           "s3:PutObject",
+           "s3:PutObjectAcl",
+           "s3:GetObjectAcl"
+         ],
+         "Resource": "arn:aws:s3:::<bucket>/*"
+       },
+       {
+         "Sid": "ReadReleaseSecret",
+         "Effect": "Allow",
+         "Resource": "<secret-arn>",
+         "Action": [
+           "secretsmanager:ListSecrets",
+           "secretsmanager:DescribeSecret",
+           "secretsmanager:GetSecretValue"
+         ]
+       }
+     ]
+   }
 
 Usage
 -----

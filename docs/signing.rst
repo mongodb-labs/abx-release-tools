@@ -1,6 +1,26 @@
 Artifact signing
 ================
 
+Signing credentials
+-------------------
+
+The ABX key exists. The username is ``ai-builder-experience``, and the
+credentials are in the ABX-Frameworks 1Password vault.
+
+A new team requests its own key with a DevProd ticket, like
+`DEVPROD-7556 <https://jira.mongodb.org/browse/DEVPROD-7556>`_. Request
+one set of credentials per project, so a leak affects one project.
+
+To find the key ID from the public key URL, run:
+
+.. code-block:: shell
+
+   curl -O https://pgp.mongodb.com/ai-builder-experience.asc
+   gpg --import ai-builder-experience.asc
+
+The import lists the key ID. For GitHub Actions, store the username,
+password, and key ID in the AWS secret; see :doc:`setup`.
+
 GitHub Actions: ``gpg-sign``
 ----------------------------
 
@@ -70,6 +90,18 @@ Inputs
    * - ``ecr_registry``, ``ecr_repository``
      - no
      - Garasign container location. Defaults to the DevProd registry.
+
+Release identity
+----------------
+
+The ``setup`` action sets the git identity to
+``mongodb-dbx-release-bot[bot]``. If the release job pushes commits or
+tags as that app, give the app access to the repository. Raise a
+ZenDesk IT ticket. The request must come from an owner of the
+repository.
+
+If the job pushes with ``GITHUB_TOKEN`` instead, add the GitHub Actions
+app to the bypass list in the rulesets. See :doc:`publishing`.
 
 Evergreen: ``evergreen/sign_artifacts.yml``
 -------------------------------------------

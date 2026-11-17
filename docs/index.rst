@@ -9,7 +9,6 @@ needs, plus the setup action that precedes them:
 .. toctree::
    :maxdepth: 2
 
-   Onboarding a repository <onboarding>
    Setup <setup>
    Dependency scanning with SilkBomb <scanning>
    Artifact signing with Garasign <signing>
@@ -69,6 +68,17 @@ systems is the normal case, not a transition state.
 The input SBOM is the one piece of the pipeline that is shared
 outright: both systems build it with the same script. See
 :doc:`scanning`.
+
+Before the first release
+------------------------
+
+The one-time setup is on the pages above:
+
+- Release environment, AWS role, AWS secret, and IAM policy:
+  :doc:`setup`.
+- Kondukto project: :doc:`scanning`.
+- Garasign credentials and release identity: :doc:`signing`.
+- PyPI pending publisher and rulesets: :doc:`publishing`.
 
 Provenance and the verification trail live in the repo README. Pin
 every action to a commit SHA in real workflows.
