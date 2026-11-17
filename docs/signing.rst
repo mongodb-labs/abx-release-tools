@@ -4,12 +4,10 @@ Artifact signing
 Signing credentials
 -------------------
 
-The ABX key exists. The username is ``ai-builder-experience``, and the
-credentials are in the ABX-Frameworks 1Password vault.
-
-A new team requests its own key with a DevProd ticket, like
-`DEVPROD-7556 <https://jira.mongodb.org/browse/DEVPROD-7556>`_. Request
-one set of credentials per project, so a leak affects one project.
+The ABX key is ``ai-builder-experience``. A team that needs its own key
+requests one as part of the onboarding steps in the `ABX release how-to
+guides
+<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
 
 To find the key ID from the public key URL, run:
 
@@ -18,8 +16,9 @@ To find the key ID from the public key URL, run:
    curl -O https://pgp.mongodb.com/ai-builder-experience.asc
    gpg --import ai-builder-experience.asc
 
-The import lists the key ID. For GitHub Actions, store the username,
-password, and key ID in the AWS secret; see :doc:`setup`.
+The import lists the key ID. Store the username, password, and key ID
+in the AWS secret for GitHub Actions (:doc:`setup`), or as hidden
+project variables for Evergreen.
 
 GitHub Actions: ``gpg-sign``
 ----------------------------
@@ -95,13 +94,11 @@ Release identity
 ----------------
 
 The ``setup`` action sets the git identity to
-``mongodb-dbx-release-bot[bot]``. If the release job pushes commits or
-tags as that app, give the app access to the repository. Raise a
-ZenDesk IT ticket. The request must come from an owner of the
-repository.
-
-If the job pushes with ``GITHUB_TOKEN`` instead, add the GitHub Actions
-app to the bypass list in the rulesets. See :doc:`publishing`.
+``mongodb-dbx-release-bot[bot]``. The bypass list in each ruleset must
+include the identity that pushes commits and tags. See
+:doc:`publishing`. The steps and the access requests are in the `ABX
+release how-to guides
+<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
 
 Evergreen: ``evergreen/sign_artifacts.yml``
 -------------------------------------------

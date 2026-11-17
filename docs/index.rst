@@ -72,7 +72,9 @@ outright: both systems build it with the same script. See
 Before the first release
 ------------------------
 
-The one-time setup is on the pages above:
+The steps and the requests are in the `ABX release how-to guides
+<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
+The configuration each action expects is on the pages above:
 
 - Release environment, AWS role, AWS secret, and IAM policy:
   :doc:`setup`.

@@ -12,17 +12,9 @@ needs:
   The repo needs ``setup`` anyway for signing and S3 upload; the
   Kondukto token then lives in the AWS secret.
 
-Onboard the repository to Kondukto
-----------------------------------
-
-File an RNDSEC task, one per repository. Project: RNDSEC. Issue type:
-Task. Summary: ``Onboard GitHub Repository to Kondukto - <org>/<repo>``.
-Assigned team: R&D Security. This creates the Kondukto project that
-SilkBomb uploads to.
-
-Repositories in the drivers org use a DevProd ticket instead, like
-`DEVPROD-15304 <https://jira.mongodb.org/browse/DEVPROD-15304>`_.
-Kondukto questions go to ``#ask-product-security``.
+The Kondukto project must exist before the upload. The onboarding step
+and the requests are in the `ABX release how-to guides
+<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
 
 GitHub Actions: run SilkBomb inline (scan-only)
 -----------------------------------------------

@@ -8,7 +8,9 @@ writes.
 One-time setup
 --------------
 
-Run these steps once for the team and once for each repository.
+The actions expect this setup before the first release. The steps and
+the requests are in the `ABX release how-to guides
+<https://docs.google.com/document/d/1rhYkWgbasperhG_9m5enMLamVkM0Nm5E7XuZ9lixxLI/edit>`_.
 
 Release environment
 ~~~~~~~~~~~~~~~~~~~
@@ -42,8 +44,8 @@ App. These actions do not use that app, so leave them out.
 AWS role
 ~~~~~~~~
 
-An AWS admin creates a role that trusts the GitHub OIDC provider. Use a
-name like ``abx-release-role``. Attach the policy below.
+The role trusts the GitHub OIDC provider. Attach the policy below. Use
+a name like ``abx-release-role``.
 
 .. code-block:: json
 
@@ -72,9 +74,8 @@ environment. Change both values for each repository.
 AWS secret
 ~~~~~~~~~~
 
-Ask DevProd Release Infrastructure for a private S3 bucket and a
-Secrets Manager secret named ``abx-release/<team>``. Include both in
-the release infrastructure onboarding request (DEVPROD-44346).
+The secret is a Secrets Manager secret named ``abx-release/<team>``.
+It holds the release S3 bucket name and the signing credentials.
 
 Do not reuse a name that starts with ``drivers/``. Non-admins can read
 secrets under that prefix.
