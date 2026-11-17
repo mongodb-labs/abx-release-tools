@@ -3,7 +3,8 @@ Setup
 
 The ``setup`` action prepares the release environment. Run it first:
 every other action except ``python/publish`` reads the environment it
-writes.
+writes. The AWS role, the secret, and the ``release`` environment are
+one-time setup; see :doc:`onboarding`.
 
 Usage
 -----

@@ -9,6 +9,7 @@ needs, plus the setup action that precedes them:
 .. toctree::
    :maxdepth: 2
 
+   Onboarding a repository <onboarding>
    Setup <setup>
    Dependency scanning with SilkBomb <scanning>
    Artifact signing with Garasign <signing>
