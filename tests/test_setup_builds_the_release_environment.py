@@ -32,8 +32,10 @@ SECRET = {
     "GPG_KEY_ID": "DEADBEEFCAFE",
 }
 
-    """A runner's temp directory, and a HOME of its own for the git identity to land in.
-    """
+
+@pytest.fixture
+def runner(tmp_path: Path) -> dict[str, str]:
+    """A runner's temp directory, and a HOME of its own for the git identity to land in."""
     home = tmp_path / "home"
     home.mkdir()
     return {
