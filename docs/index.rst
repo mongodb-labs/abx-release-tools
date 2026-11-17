@@ -33,7 +33,8 @@ things, not two implementations of the same thing.
    * - Dependency scanning
      - ``silkbomb upload``
      - ``silkbomb update``, then ``augment``
-     - Two halves of scanning, not one job twice. Evergreen pushes the
+     - Two halves of scanning when a repo runs both systems, not one
+       job twice. Evergreen pushes the
        dependency list to Kondukto and produces no release artifact.
        GitHub Actions produces ``cyclonedx.sbom.json``, the SBOM that
        ships with the release. Only the second needs
@@ -59,11 +60,13 @@ things, not two implementations of the same thing.
        Evergreen is a stored PyPI API token, which is what trusted
        publishing exists to remove.
 
-Every ABX repo
-publishes from GitHub Actions, because no other system can. A repo
-that also has an Evergreen project can run the three earlier steps
-there, which is what ``evergreen/`` is for. One repo using both
-systems is the normal case, not a transition state.
+GitHub Actions can run all four steps. Publishing must run there,
+because PyPI trusted publishing needs a GitHub OIDC token. Evergreen
+can run the three earlier steps, but it cannot publish.
+
+A repo that already has an Evergreen project can run scanning,
+signing, and tracing there. A repo without one uses GitHub Actions
+for everything, which is the normal case for ABX.
 
 The input SBOM is the one piece of the pipeline that is shared
 outright: both systems build it with the same script. See

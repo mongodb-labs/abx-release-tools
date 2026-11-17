@@ -4,7 +4,7 @@ Artifact signing
 GitHub Actions: ``gpg-sign``
 ----------------------------
 
-Signs release artifacts with the Garasign GPG container and moves the
+Signs release artifacts with the Garasign container and moves the
 detached ``.sig`` files to ``RELEASE_ASSETS``. Run ``setup`` first.
 
 The ``filenames`` input contract, shared by every action that takes a
@@ -35,7 +35,8 @@ Inputs
      - File names to sign. Can be a glob.
    * - ``ecr_registry``, ``ecr_repository``
      - no
-     - Garasign container location. Defaults to the DevProd registry.
+     - Garasign container location. Default
+       ``release-infrastructure/garasign-git`` in the DevProd registry.
 
 Pass a glob, never a package's file names. A rename or version bump
 then never means editing the workflow.
@@ -43,8 +44,8 @@ then never means editing the workflow.
 GitHub Actions: ``git-sign``
 ----------------------------
 
-Runs arbitrary git commands in a container with the Garasign GPG keys
-loaded. Use it to sign release tags.
+Runs arbitrary git commands in the same Garasign container, with the
+GPG keys loaded. Use it to sign release tags.
 
 Usage
 -----
@@ -69,7 +70,8 @@ Inputs
      - Git command run inside the container.
    * - ``ecr_registry``, ``ecr_repository``
      - no
-     - Garasign container location. Defaults to the DevProd registry.
+     - Garasign container location. Default
+       ``release-infrastructure/garasign-git`` in the DevProd registry.
 
 Evergreen: ``evergreen/sign_artifacts.yml``
 -------------------------------------------
