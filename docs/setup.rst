@@ -46,6 +46,40 @@ Inputs
      - no
      - ECR region. Default ``us-east-1``.
 
+Secret keys
+-----------
+
+The secret named by ``aws_secret_id`` holds JSON. The action reads these
+keys:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Key
+     - Required
+     - Use
+   * - ``garasign-username``
+     - yes
+     - Garasign username.
+   * - ``garasign-password``
+     - yes
+     - Garasign password.
+   * - ``gpg-key-id``
+     - yes
+     - Key ID passed to ``gpg --local-user``.
+   * - ``gpg-public-url``
+     - no
+     - Exported as ``GPG_PUBLIC_URL``.
+   * - ``release-assets-bucket``
+     - no
+     - Exported as ``AWS_BUCKET``. ``upload-s3-assets`` needs it.
+   * - ``security-report-url``
+     - no
+     - Exported as ``SECURITY_REPORT_URL``.
+   * - ``kondukto-token``
+     - no
+     - Written to ``KONDUKTO_ENVFILE``. ``sbom`` augment needs it.
+
 What it writes
 --------------
 
